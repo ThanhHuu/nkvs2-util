@@ -13,6 +13,8 @@
 #include <Process.au3>
 #include <WinAPIFiles.au3>
 #include <File.au3>
+#include <GUIConstantsEx.au3>
+
 #RequireAdmin
 
 Func ExitGame()
@@ -24,8 +26,9 @@ Func ExitGame()
    Next
 EndFunc
 
-Local $strAutoDir = "C:\Users\htra\Downloads\AutoNKVS2_2030" ;$CmdLine[1]
-Local $strSettings = "C:\Users\htra\Downloads\NKVSUtil\settings.txt";$CmdLine[2]
+Local $strAutoDir = $CmdLine[1];"C:\Users\htra\Downloads\AutoNKVS2_2030"
+Local $strSettings = $CmdLine[2];"C:\Users\htra\Downloads\NKVSUtil\settings.txt"
+Local $iAutoNext = $CmdLine[3]
 Local $strAutoApp = $strAutoDir & "\nkvs2Auto.exe"
 
 Local $arrFeatures = FileReadToArray($strSettings)
@@ -92,11 +95,15 @@ EndFunc
 Func DoWork($strAccFile, $iWait)
    Local $strAutoSetting = $strAutoDir & "\Settings\Accounts.xml"
    FileMove($strAccFile, $strAutoSetting, 1)
-   Local $pid = Run($strAutoApp)
-   MsgBox(0, "", "Stop")
-   ;Sleep($iWait)
-   ProcessClose($pid)
+   If $iAutoNext == $GUI_CHECKED Then
+	  Local $pid = Run($strAutoApp)
+	  Sleep($iWait * 60 * 1000)
+	  ProcessClose($pid)
+   Else
+	  RunWait($strAutoApp)
+   EndIf
    ExitGame()
+   Sleep(3000)
    FileMove($strAutoSetting, $strAccFile, 1)
 EndFunc
 

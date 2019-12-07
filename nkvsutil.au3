@@ -16,8 +16,9 @@
 #RequireAdmin
 
 Local $strAutoDir = FileSelectFolder ("Chon thu muc auto", "C:\Users\htra\Downloads")
-Local $ui = GUICreate("NKVS", 150, 45)
-Local $bt = GUICtrlCreateButton("Start", 70, 10, 60)
+Local $ui = GUICreate("NKVS", 200, 45)
+Local $ckAutoNext = GUICtrlCreateCheckbox("Auto Next", 10, 12, 100)
+Local $bt = GUICtrlCreateButton("Start", 120, 10, 60)
 Local $strSettings = @WorkingDir & "\settings.txt"
 GUISetState(@SW_SHOW, $ui)
 InitSettings()
@@ -32,7 +33,7 @@ While True
 	  If $strCurrent == "Start" Then
 		 GUICtrlSetData($bt, "Stop")
 		 FileDelete($strExit)
-		 Run(@WorkingDir & "\main.exe " & $strAutoDir & " " & $strSettings)
+		 Run(@WorkingDir & "\main.exe " & $strAutoDir & " " & $strSettings & " " & GUICtrlRead($ckAutoNext))
 	  Else
 		 GUICtrlSetData($bt, "Start")
 		 _FileCreate($strExit)
