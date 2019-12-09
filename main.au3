@@ -94,10 +94,24 @@ EndFunc
 
 Func DoWork($strAccFile, $iWait)
    Local $strAutoSetting = $strAutoDir & "\Settings\Accounts.xml"
+   If FileExists($strAutoSetting) Then
+	  FileMove($strAutoSetting, $strAutoSetting & "bk", 1)
+   EndIf
    FileMove($strAccFile, $strAutoSetting, 1)
    If $iAutoNext == $GUI_CHECKED Then
 	  Local $pid = Run($strAutoApp)
-	  Sleep($iWait * 60 * 1000)
+	  Local $iWaitStep = 60*1000
+	  For $i = 1 To $iWait
+		 Sleep($i * $iWaitStep)
+		 If Not ProcessExists($pid) Then
+			ExitLoop
+		 EndIf
+		 Local $pidFailures = GetFailures()
+		 For $pidFailues In $pidFailures
+			ProcessClose($pidFailues)
+			Sleep(10000)
+		 Next
+	  Next
 	  ProcessClose($pid)
    Else
 	  RunWait($strAutoApp)
@@ -105,5 +119,18 @@ Func DoWork($strAccFile, $iWait)
    ExitGame()
    Sleep(3000)
    FileMove($strAutoSetting, $strAccFile, 1)
+EndFunc
+
+Func GetFailures()
+   Local $arrFailures = WinList("[REGEXPTITLE:(Ngạo Kiếm Vô Song II Số phiên bản:).*]")
+   Local $pids[$arrFailures[0][0]]
+   If $arrFailures[0][0] > 0 Then
+	  _FileWriteLog("apllication.log", "Failures: " & $arrFailures[0][0])
+   EndIf
+   For $i = 1 To $arrFailures[0][0]
+	  Local $hwnd = $arrFailures[$i][1]
+	  $pids[$i - 1] = WinGetProcess($hwnd)
+   Next
+   Return $pids
 EndFunc
 
