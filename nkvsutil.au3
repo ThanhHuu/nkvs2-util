@@ -33,7 +33,7 @@ While True
 	  If $strCurrent == "Start" Then
 		 GUICtrlSetData($bt, "Stop")
 		 FileDelete($strExit)
-		 Run(@WorkingDir & "\main.exe " & $strAutoDir & " " & $strSettings & " " & GUICtrlRead($ckAutoNext))
+		 Run(@AutoItExe & " " & @WorkingDir & "\main.au3 " & $strAutoDir & " " & $strSettings & " " & GUICtrlRead($ckAutoNext))
 	  Else
 		 GUICtrlSetData($bt, "Start")
 		 _FileCreate($strExit)

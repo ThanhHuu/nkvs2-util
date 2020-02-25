@@ -1,0 +1,6 @@
+click left-6,602-1 0.3
+click left-28,561-1 0.3
+send BoTre 0.3
+send {ENTER} 0.3
+send {TAB} 0.5
+send {ESC} 0.5

@@ -30,12 +30,15 @@ Local $strAutoDir = $CmdLine[1];"C:\Users\htra\Downloads\AutoNKVS2_2030"
 Local $strSettings = $CmdLine[2];"C:\Users\htra\Downloads\NKVSUtil\settings.txt"
 Local $iAutoNext = $CmdLine[3]
 Local $strAutoApp = $strAutoDir & "\nkvs2Auto.exe"
+Local $iRunningCfg = 0
 
 Local $arrFeatures = FileReadToArray($strSettings)
 ExitGame()
 
+
 For $strConf In $arrFeatures
    If $strConf <> "" Then
+	  $iRunningCfg += 1
 	  Local $arr = StringSplit($strConf, " ")
 	  RunFeature($arr[1], $arr[2], $arr[3])
    EndIf
@@ -62,6 +65,11 @@ Func IsExit()
 EndFunc
 
 Func ReduceTime($strFeature)
+   Local $strFeatureCfg = FileReadLine($strSettings, $iRunningCfg)
+   Local $arrConf = StringSplit($strFeatureCfg, " ")
+   Local $strNewConf = $strFeature & " " & $arrConf[2] - 1 & " " & $arrConf[3]
+   _FileWriteToLine($strSettings, $iRunningCfg, $strNewConf, True)
+   #cs
    Local $arrFeatures = FileReadToArray($strSettings)
    Local $i = 1
    For $strFeatureCfg In $arrFeatures
@@ -72,6 +80,7 @@ Func ReduceTime($strFeature)
 	  EndIf
 	  $i += 1
    Next
+   #ce
 EndFunc
 
 Func Work($strFeature, $iWait)
@@ -100,18 +109,25 @@ Func DoWork($strAccFile, $iWait)
    FileMove($strAccFile, $strAutoSetting, 1)
    If $iAutoNext == $GUI_CHECKED Then
 	  Local $pid = Run($strAutoApp)
-	  Local $iWaitStep = 60*1000
-	  For $i = 1 To $iWait
-		 Sleep($i * $iWaitStep)
+	  Local $iWaitStep = 2
+	  Local $iRemainingWait = $iWait
+	  For $i = 1 To 3
+		 Sleep($iWaitStep*60*1000)
 		 If Not ProcessExists($pid) Then
+			$iRemainingWait = 0
 			ExitLoop
 		 EndIf
 		 Local $pidFailures = GetFailures()
+		 If UBound($pidFailures) == 0 Then
+			$iRemainingWait = $iWait - $iWaitStep
+			ExitLoop
+		 EndIf
 		 For $pidFailues In $pidFailures
 			ProcessClose($pidFailues)
 			Sleep(10000)
 		 Next
 	  Next
+	  Sleep(($iRemainingWait > 0 ? $iRemainingWait : 0)*60*1000)
 	  ProcessClose($pid)
    Else
 	  RunWait($strAutoApp)
@@ -122,7 +138,7 @@ Func DoWork($strAccFile, $iWait)
 EndFunc
 
 Func GetFailures()
-   Local $arrFailures = WinList("[REGEXPTITLE:(Ngạo Kiếm Vô Song II Số phiên bản:).*]")
+   Local $arrFailures = WinList("[REGEXPTITLE:(Ngạo Kiếm Vô Song II )(Số phiên bản:|Version).*]")
    Local $pids[$arrFailures[0][0]]
    If $arrFailures[0][0] > 0 Then
 	  _FileWriteLog("apllication.log", "Failures: " & $arrFailures[0][0])

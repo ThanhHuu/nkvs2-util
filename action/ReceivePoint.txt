@@ -1,0 +1,5 @@
+click left-629,30-1 0.3
+click left-501,113-1 0.3
+click left-582,193-1 0.3
+click left-661,425-1 0.3
+click left-751,165-1 0.3
