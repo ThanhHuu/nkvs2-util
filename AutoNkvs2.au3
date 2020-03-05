@@ -45,7 +45,7 @@ Func ClickOnFeature($strName, $feature)
    _GUICtrlTab_SetCurFocus($CTRL_TAB_CONFIGURATION, _GUICtrlTab_FindTab($CTRL_TAB_CONFIGURATION, "Cơ bản"))
    Local $index = _GUICtrlListView_FindInText($CTRL_LIST_FEATRUE, $feature)
    ClickItem($CTRL_LIST_FEATRUE, $index, 0)
-   ClickItem($CTRL_LIST_FEATRUE, $index, 2)
+   ClickItem($CTRL_LIST_FEATRUE, $index, 2, 2)
    EndFunc
 
 Func SetFollow($strName, $follow, $quickly)
@@ -92,22 +92,28 @@ Func SelectName($strName)
    Local $index = _GUICtrlListView_FindInText($CTRL_LIST_NAME, $strName)
    If $index >= 0 Then
 	  _GUICtrlListView_SetItemSelected($CTRL_LIST_NAME, $index, true, true)
+	  Return $index
    EndIf
+   Return -1
 EndFunc
 
-Func ChangeStateAtIndex($index, $isShow)
-   Local $strName = _GUICtrlListView_GetItemText($CTRL_LIST_NAME, $index, 1)
-   Local $strTitle = "[REGEXPTITLE:(Ngạo Kiếm Vô Song II)\((" & $strName & ").*]"
+Func ShowWindow($index, $isShow)
+   If $index < 0 Then
+	  Return
+   EndIf
+   Local $strCurrentState = _GUICtrlListView_GetItemText($CTRL_LIST_NAME, $index, 3)
    If $isShow Then
-	  If BitAND(WinGetState($strTitle), 2) Then
+	  If $strCurrentState == "" Then
 		 Return True
 	  Else
 		 ClickItem($CTRL_LIST_NAME, $index, 3)
+		 Sleep(500)
 		 Return False
 	  EndIf
    Else
-	  If BitAND(WinGetState($strTitle), 2) Then
+	  If $strCurrentState == "" Then
 		 ClickItem($CTRL_LIST_NAME, $index, 3)
+		 Sleep(500)
 		 Return True
 	  Else
 		 Return False
@@ -115,7 +121,7 @@ Func ChangeStateAtIndex($index, $isShow)
    EndIf
 EndFunc
 
-Func ClickItem($ctrlList, $item, $subItem)
+Func ClickItem($ctrlList, $item, $subItem, $iClicks = 1)
    If $subItem = 0 Then
 	  WinActivate($HWND_AUTO)
 	  _GUICtrlListView_ClickItem($ctrlList, $item)
@@ -129,13 +135,13 @@ Func ClickItem($ctrlList, $item, $subItem)
    Local $arrCoord = _GUICtrlListView_GetItemRect($ctrlList, $item)
    Local $x = $arrCoord[0] + $offSet + 3
    Local $y = $arrCoord[1] + 10
-   ControlClick($HWND_AUTO, "", $ctrlList, "left", 1, $x, $y)
+   ControlClick($HWND_AUTO, "", $ctrlList, "left", $iClicks, $x, $y)
 EndFunc
 
 Func BuildTeam($strCaptain, $arrMembers)
    SelectName($strCaptain)
    _GUICtrlTab_SetCurFocus($CTRL_TAB_CONFIGURATION, _GUICtrlTab_FindTab($CTRL_TAB_CONFIGURATION, "Tổ đội"))
-   ControlClick($HWND_AUTO, "", ControlGetHandle($HWND_AUTO, "", "[CLASS:Button; INSTANCE:87]"))
+   ControlClick($HWND_AUTO, "", "[CLASS:Button; INSTANCE:87]")
    If Not _GUICtrlButton_GetCheck(ControlGetHandle($HWND_AUTO, "", "[CLASS:Button; INSTANCE:91]")) Then
 	  _GUICtrlButton_Click(ControlGetHandle($HWND_AUTO, "", "[CLASS:Button; INSTANCE:91]"))
    EndIf
@@ -180,6 +186,13 @@ Func BuildTeam($strCaptain, $arrMembers)
 	  EndIf
    Next
    SelectName($strCaptain)
+EndFunc
+
+;DestroyTeam("ThienGiangXA")
+Func DestroyTeam($strCaptain)
+   SelectName($strCaptain)
+   _GUICtrlTab_SetCurFocus($CTRL_TAB_CONFIGURATION, _GUICtrlTab_FindTab($CTRL_TAB_CONFIGURATION, "Tổ đội"))
+   ControlClick($HWND_AUTO, "", ControlGetHandle($HWND_AUTO, "", "[CLASS:Button; INSTANCE:88]"))
 EndFunc
 
 Func GetCurrentState($strName)

@@ -20,16 +20,23 @@ Local $strParameter  = $CmdLine[2]
 Switch $strFuncName
 Case "LoginAtIndex"
    Local $arrParam = StringSplit($strParameter, '|')
-   Call($strFuncName, $arrParam[1], $arrParam[2], $arrParam[3], $arrParam[4], $arrParam[5])
+   Call($strFuncName, $arrParam[1], $arrParam[2], $arrParam[3], $arrParam[4], $arrParam[5], $arrParam[6] == True)
 EndSwitch
 
-Func LoginAtIndex($iIndex, $strServer, $strUsr, $strPwd, $strName)
+Func LoginAtIndex($iIndex, $strServer, $strUsr, $strPwd, $strName, $isNeedLogout)
    RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 Lock")
    Local $strCurName = _GUICtrlListView_GetItemText($CTRL_LIST_NAME, $iIndex, 1)
    ClickOnName($strCurName)
    ChangeLoginInfo($strCurName, $strServer, $strUsr, $strPwd, $strName)
    _FileWriteLog(GetFileLog("executor"), StringFormat("Changed index %i to %s", $iIndex, $strName))
-   Local $isShow = ChangeStateAtIndex($iIndex, True)
+   If Not $isNeedLogout Then
+	  ClickOnName($strName)
+	  RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 UnLock")
+	  _FileWriteLog(GetFileLog("executor"), StringFormat("Change %i to %s", $iIndex, $strName))
+	  _FileCreate($strName & ".logged")
+	  Return
+   EndIf
+   Local $isShow = ShowWindow($iIndex, True)
    RunWait(@AutoItExe & ' ' & @WorkingDir & '\Action.au3' & ' "' & @WorkingDir & '\action\Logout.txt"' & ' 2 ' & $strCurName)
    ClickOnName($strName)
    RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 UnLock")
@@ -52,6 +59,8 @@ Func LoginAtIndex($iIndex, $strServer, $strUsr, $strPwd, $strName)
 		 $iWaitingTime = 0
 	  EndIf
    WEnd
-   ChangeStateAtIndex($iIndex, $isShow)
+   RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 Lock")
+   ShowWindow($iIndex, $isShow)
    _FileCreate($strName & ".logged")
+   RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 UnLock")
 EndFunc

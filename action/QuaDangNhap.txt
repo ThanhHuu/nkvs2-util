@@ -1,0 +1,40 @@
+send {TAB} 0.5
+send {ESC} 0.5
+click left-545,53-1 0.2
+click left-588,50-1 0.2
+
+click left-629,31-1 0.2
+click left-545,53-1 0.2
+click left-588,50-1 0.2
+
+click left-629,31-1 0.2
+click left-545,53-1 0.2
+click left-588,50-1 0.2
+
+click left-648,182-1 0.2
+
+click left-193,212-1 0.5
+click left-612,236-1 0.1
+click left-611,286-1 0.1
+click left-611,336-1 0.1
+click left-611,386-1 0.1
+click left-612,432-1 0.1
+click left-612,481-1 0.1
+click left-708,551-1 0.2
+click left-693,499-30 1
+click left-612,500-1 0.1
+
+click left-187,162-1 0.2
+click left-552,478-1 0.2
+click left-552,478-1 0.2
+click left-552,478-1 0.2
+click left-552,478-1 0.2
+click left-552,478-1 0.2
+click left-552,478-1 0.2
+click left-552,478-1 0.2
+click left-552,478-1 0.2
+click left-552,478-1 0.2
+
+
+send {TAB} 0.5
+send {ESC} 0.5

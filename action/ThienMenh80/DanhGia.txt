@@ -1,0 +1,11 @@
+send 0 1
+click left-112,214-1 0.8
+click left-120,238-1 10
+send {TAB} 0.5
+click left-328,126-1 50
+click left-790,42-1 0.1
+click left-359,295-1 0.3
+click left-148,194-1 0.1
+click left-281,498-1 0.1
+send {TAB} 0.3
+send {ESC} 0.3

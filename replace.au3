@@ -35,6 +35,8 @@ Local $iFrom =4;$CmdLine[2]
 Local $iSize = 3;$CmdLine[3]
 Local $iFromIndex = 6;$CmdLine[4]
 Local $isAutoNext = False;$CmdLine[5]
+Local $isReceiveAward = False
+Local $isNeedLogout = False
 
 Local $BC = "Bí Cảnh"
 Local $NTD = "N.Trúc Đàm"
@@ -46,9 +48,13 @@ Local $CP = "CauPhuc"
 Local $NSN = "NhanSoiNoi"
 Local $DLQ = "Đ.Linh Quả"
 Local $THDC = "ThuHoiDaoCu"
+Local $NT = "NoThing"
+Local $LL = "Lịch Luyện"
+Local $TSK = "TangSkill"
+Local $NQ = "QuaDangNhap"
 
 Func IsTeamFeature($strFeature)
-   Local $arrTeamFeature = [$BC, $NTD, $TN]
+   Local $arrTeamFeature = [$BC, $NTD, $TN, $NT, $LL]
    For $strTeamFeature In $arrTeamFeature
 	  If $strTeamFeature == $strFeature Then
 		 Return True
@@ -68,7 +74,7 @@ Func IsNeedFollow($strFeature)
 EndFunc
 
 Func IsSyncFeature($strFeature)
-   Local $arrSyncFeature = [$TM, $CP, $NSN, $THDC]
+   Local $arrSyncFeature = [$TM, $CP, $NSN, $THDC, $NQ]
    For $strTeamFeature In $arrSyncFeature
 	  If $strTeamFeature == $strFeature Then
 		 Return True
@@ -84,24 +90,31 @@ EndFunc
 
 RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 UnLock")
 FileDelete("Pause")
-RunForFile($TN, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang1.txt", 1, 3)
-RunForFile($TN, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
-RunForFile($DV, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 25, 3)
-RunForFile($DV, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang3.txt", 1, 3)
-RunForFile($DV, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang4.txt", 1, 3)
-RunForFile($NTD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang1.txt", 7, 3)
-RunForFile($NTD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
-RunForFile($NTD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang1.txt", 7, 3)
-RunForFile($NTD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
-RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang3.txt", 19, 3)
-RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang4.txt", 1, 3)
+#cs
+RunForFile($DD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang1.txt", 1, 3)
+RunForFile($DD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
+RunForFile($DD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang3.txt", 1, 3)
+RunForFile($DD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang4.txt", 1, 3)
+
 RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang1.txt", 1, 3)
 RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
 RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang3.txt", 1, 3)
 RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang4.txt", 1, 3)
-RunForFile($THDC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang3.txt", 1, 3)
-RunForFile($THDC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang4.txt", 1, 3)
 
+RunForFile($DD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang1.txt", 1, 3)
+RunForFile($DD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
+RunForFile($DD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang3.txt", 1, 3)
+RunForFile($DD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang4.txt", 1, 3)
+
+RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang1.txt", 1, 3)
+RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
+RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang3.txt", 1, 3)
+RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang4.txt", 1, 3)
+
+RunForFile($NQ, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
+#ce
+
+RunForFile($NT, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang3.txt", 7, 3)
 ; Script Start - Add your code below here
 
 Func RunForFile($strFeature, $fAccount, $iFrom, $iSize)
@@ -120,7 +133,7 @@ Func RunForFile($strFeature, $fAccount, $iFrom, $iSize)
 		 Local $strServer = $arrInfo[1]
 		 Local $strUsr = $arrInfo[2]
 		 Local $strName = $arrInfo[3]
-		 Local $strParams = StringFormat("%i|%s|%s|%s|%s", $iFromIndex + $i, $strServer, $strUsr, "Ngoc@nh91", $strName)
+		 Local $strParams = StringFormat("%i|%s|%s|%s|%s|%s", $iFromIndex + $i, $strServer, $strUsr, "Ngoc@nh91", $strName, $isNeedLogout)
 		 Run(@AutoItExe & ' ' & @WorkingDir & '\Executor.au3' & ' LoginAtIndex ' & '"' & $strParams &'"')
 		 _FileWriteLog(GetFileLog("replace"), StringFormat("Submit for %s", $strName))
 		 $arrName[$i] = $strName
@@ -131,7 +144,8 @@ Func RunForFile($strFeature, $fAccount, $iFrom, $iSize)
 		 Local $arrLogged = _FileListToArray(@WorkingDir, "*.logged", 1)
 		 If Not @error And $arrLogged[0] >= $iSize Then
 			For $i = 1 To $arrLogged[0]
-			   FileDelete($arrLogged[$i])
+			   FileMove($arrLogged[$i], StringReplace($arrLogged[$i], ".logged", ".running"))
+			   ;FileDelete($arrLogged[$i])
 			Next
 			ExitLoop
 		 EndIf
@@ -140,7 +154,6 @@ Func RunForFile($strFeature, $fAccount, $iFrom, $iSize)
 	  RunFeature($strFeature, $arrName)
    WEnd
 EndFunc
-
 
 Func RunFeature($strFeature, $arrName)
    Local $isTeamFeature = IsTeamFeature($strFeature)
@@ -154,7 +167,6 @@ Func RunFeature($strFeature, $arrName)
 		 SetFollow($strName, True, True)
 	  Next
    EndIf
-
    Local $arrAction[0]
    Switch $strFeature
    Case $NTD
@@ -165,10 +177,22 @@ Func RunFeature($strFeature, $arrName)
 	  Sleep(15 * 1000)
 	  _ArrayAdd($arrAction, '"' & @WorkingDir & '\action\' & $strFeature & '.txt"')
    Case $TM
-	  _ArrayAdd($arrAction, '"' & @WorkingDir & '\action\ThienMenh\VanTieu.txt"')
-	  _ArrayAdd($arrAction, '"' & @WorkingDir & '\action\ThienMenh\HaoHuu.txt"')
-	  _ArrayAdd($arrAction, '"' & @WorkingDir & '\action\ThienMenh\TheGioi.txt"')
-	  _ArrayAdd($arrAction, '"' & @WorkingDir & '\action\ThienMenh\CongThuc.txt"')
+	  _ArrayAdd($arrAction, '"' & @WorkingDir & '\action\ThienMenh80\HaoHuu.txt"')
+	  _ArrayAdd($arrAction, '"' & @WorkingDir & '\action\ThienMenh80\DanhGia.txt"')
+	  _ArrayAdd($arrAction, '"' & @WorkingDir & '\action\ThienMenh80\LuuGuong.txt"')
+	  _ArrayAdd($arrAction, '"' & @WorkingDir & '\action\ThienMenh80\CuongHoa.txt"')
+   Case $NT
+	  Local $arrRunning = _FileListToArray(@WorkingDir, "*.running", 1)
+	  For $i = 1 To $arrRunning[0]
+		 FileDelete($arrRunning[$i])
+	  Next
+	  If Not $isAutoNext Then
+		 Local $choice = MsgBox(4, "Choices", "Continue ?")
+		 If $choice == $IDNO Then
+			Exit
+		 EndIf
+		 Return
+	  EndIf
    Case Else
 	  _ArrayAdd($arrAction, '"' & @WorkingDir & '\action\' & $strFeature & '.txt"')
    EndSwitch
@@ -186,6 +210,12 @@ Func RunFeature($strFeature, $arrName)
 	  Else
 		 For $strName In $arrName
 			ClickOnFeature($strName, $strFeature)
+			If $strFeature == $TN Then
+			   Local $index = SelectName($strName)
+			   Local $isShow = ShowWindow($index, True)
+			   RunWait(@AutoItExe & ' ' & @WorkingDir & '\Action.au3' & ' "' & @WorkingDir & '\action\MoNhiemVu.txt" 2 ' & $strName)
+			   ShowWindow($index, $isShow)
+			EndIf
 		 Next
 	  EndIf
 	  For $strAction In $arrAction
@@ -206,7 +236,20 @@ Func RunFeature($strFeature, $arrName)
 		 SetFollow($strName, False, True)
 	  Next
    EndIf
-   If $isAutoNext Then
+   If $isTeamFeature And UBound($arrName) > 1 Then
+	  DestroyTeam($arrName[0])
+   EndIf
+   If $isReceiveAward Then
+	  For $strName In $arrName
+		 _FileWriteLog(GetFileLog("replace"), StringFormat("Receive for %s", $strName))
+		 RunWait(@AutoItExe & ' ' & @WorkingDir & '\Action.au3' & ' '& '"' & @WorkingDir & '\action\NhanSoiNoi.txt"' & ' 2 ' & $strName)
+	  Next
+   EndIf
+   Local $arrRunning = _FileListToArray(@WorkingDir, "*.running", 1)
+   For $i = 1 To $arrRunning[0]
+	  FileDelete($arrRunning[$i])
+   Next
+   If Not $isAutoNext Then
 	  Local $choice = MsgBox(4, "Choices", "Continue ?")
 	  If $choice == $IDNO Then
 		 Exit
