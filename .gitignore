@@ -1,4 +1,6 @@
 exit
 settings.txt
+current
+lock.db
 *.exe
 *.log
