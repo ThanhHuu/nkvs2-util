@@ -26,41 +26,39 @@ EndSwitch
 Func LoginAtIndex($iIndex, $strServer, $strUsr, $strPwd, $strName, $isNeedLogout)
    RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 Lock")
    Local $strCurName = _GUICtrlListView_GetItemText($CTRL_LIST_NAME, $iIndex, 1)
-   ClickOnName($strCurName)
-   ChangeLoginInfo($strCurName, $strServer, $strUsr, $strPwd, $strName)
-   _FileWriteLog(GetFileLog("executor"), StringFormat("Changed index %i to %s", $iIndex, $strName))
-   If Not $isNeedLogout Then
-	  ClickOnName($strName)
+   ClickItem($CTRL_LIST_NAME, $iIndex, 0)
+   If $isNeedLogout Then
+	  Local $isShow = True
+	  $isShow = ShowWindow($iIndex, $isShow)
+	  While True
+		 If Not WinExists("[REGEXPTITLE:(Ngạo Kiếm Vô Song II)\((" & $strCurName & ").*]") Then
+			ExitLoop
+		 EndIf
+		 RunWait(@AutoItExe & ' ' & @WorkingDir & '\Action.au3' & ' "' & @WorkingDir & '\action\Logout.txt"' & ' 2 ' & $strCurName)
+	  WEnd
+	  ShowWindow($iIndex, $isShow)
+	  ChangeLoginInfo($strCurName, $strServer, $strUsr, $strPwd, $strName)
+	  ClickItem($CTRL_LIST_NAME, $iIndex, 0)
 	  RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 UnLock")
-	  _FileWriteLog(GetFileLog("executor"), StringFormat("Change %i to %s", $iIndex, $strName))
+   Else
+	  ChangeLoginInfo($strCurName, $strServer, $strUsr, $strPwd, $strName)
+	  RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 UnLock")
 	  _FileCreate($strName & ".logged")
 	  Return
    EndIf
-   Local $isShow = ShowWindow($iIndex, True)
-   RunWait(@AutoItExe & ' ' & @WorkingDir & '\Action.au3' & ' "' & @WorkingDir & '\action\Logout.txt"' & ' 2 ' & $strCurName)
-   ClickOnName($strName)
-   RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 UnLock")
-   Local $iWaitingTime = 0
-   While True
-	  Sleep(5 * 1000)
-	  $iWaitingTime += 1
-	  Local $loggedIn = WinExists("[REGEXPTITLE:(Ngạo Kiếm Vô Song II)\((" & $strName & ").*]")
-	  If $loggedIn Then
-		 _FileWriteLog(GetFileLog("executor"), StringFormat("Logged %s at %i", $strName, $iIndex))
-		 ExitLoop
+   For $i = 1 To 40
+	  Sleep(2 * 1000)
+	  If WinExists("[REGEXPTITLE:(Ngạo Kiếm Vô Song II)\((" & $strName & ").*]") Then
+		 _FileCreate($strName & ".logged")
+		 Return
 	  EndIf
-	  If $iWaitingTime == 6 Then
+	  If Mod($i, 20) == 0 Then
 		 RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 Lock")
-		 ClickOnName($strName)
-		 RunWait(@AutoItExe & ' ' & @WorkingDir & '\Action.au3' & ' "' & @WorkingDir & '\action\Logout.txt"' & ' 2 ' & $strCurName)
+		 ClickItem($CTRL_LIST_NAME, $iIndex, 0)
 		 Sleep(1000)
-		 ClickOnName($strName)
+		 ClickItem($CTRL_LIST_NAME, $iIndex, 0)
 		 RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 UnLock")
-		 $iWaitingTime = 0
 	  EndIf
-   WEnd
-   RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 Lock")
-   ShowWindow($iIndex, $isShow)
-   _FileCreate($strName & ".logged")
-   RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 UnLock")
+   Next
+   _FileWriteLog(GetFileLog("executor"), StringFormat("Error Logged %s at %i", $strName, $iIndex))
 EndFunc

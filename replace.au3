@@ -35,7 +35,6 @@ Local $iFrom =4;$CmdLine[2]
 Local $iSize = 3;$CmdLine[3]
 Local $iFromIndex = 6;$CmdLine[4]
 Local $isAutoNext = False;$CmdLine[5]
-Local $isReceiveAward = False
 Local $isNeedLogout = False
 
 Local $BC = "Bí Cảnh"
@@ -49,12 +48,15 @@ Local $NSN = "NhanSoiNoi"
 Local $DLQ = "Đ.Linh Quả"
 Local $THDC = "ThuHoiDaoCu"
 Local $NT = "NoThing"
+Local $NT_T = "NoThing"
 Local $LL = "Lịch Luyện"
 Local $TSK = "TangSkill"
 Local $NQ = "QuaDangNhap"
+Local $MKT = "MuaKienThiet"
+Local $BH = "BangHoi\RuouChe"
 
 Func IsTeamFeature($strFeature)
-   Local $arrTeamFeature = [$BC, $NTD, $TN, $NT, $LL]
+   Local $arrTeamFeature = [$BC, $NTD, $TN, $NT_T, $LL, $DD]
    For $strTeamFeature In $arrTeamFeature
 	  If $strTeamFeature == $strFeature Then
 		 Return True
@@ -74,7 +76,7 @@ Func IsNeedFollow($strFeature)
 EndFunc
 
 Func IsSyncFeature($strFeature)
-   Local $arrSyncFeature = [$TM, $CP, $NSN, $THDC, $NQ]
+   Local $arrSyncFeature = [$TM, $CP, $NSN, $THDC, $NQ, $TSK, $MKT, $BH]
    For $strTeamFeature In $arrSyncFeature
 	  If $strTeamFeature == $strFeature Then
 		 Return True
@@ -90,6 +92,9 @@ EndFunc
 
 RunWait(@AutoItExe & " " & @WorkingDir & "\Locker.au3 UnLock")
 FileDelete("Pause")
+ClearRunning()
+
+
 #cs
 RunForFile($DD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang1.txt", 1, 3)
 RunForFile($DD, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
@@ -110,12 +115,15 @@ RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang1.txt", 1, 3)
 RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
 RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang3.txt", 1, 3)
 RunForFile($BC, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang4.txt", 1, 3)
-
-RunForFile($NQ, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
 #ce
 
-RunForFile($NT, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang3.txt", 7, 3)
-; Script Start - Add your code below here
+RunForFile($NT, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang1.txt", 7, 3)
+
+RunForFile($LL, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang1.txt", 1, 3)
+RunForFile($LL, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang4.txt", 1, 3)
+RunForFile($LL, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang2.txt", 1, 3)
+RunForFile($LL, "C:\Users\htra\Downloads\NKVSUtil\ThienGiang3.txt", 1, 3)
+
 
 Func RunForFile($strFeature, $fAccount, $iFrom, $iSize)
    _FileWriteLog(GetFileLog("replace"), StringFormat("Run %s For %s From %i", $strFeature, $fAccount, $iFrom))
@@ -152,21 +160,12 @@ Func RunForFile($strFeature, $fAccount, $iFrom, $iSize)
 	  WEnd
 	  _FileWriteLog(GetFileLog("replace"), "Logged for all")
 	  RunFeature($strFeature, $arrName)
+	  ClearRunning()
    WEnd
 EndFunc
 
 Func RunFeature($strFeature, $arrName)
-   Local $isTeamFeature = IsTeamFeature($strFeature)
-   If $isTeamFeature And UBound($arrName) > 1 Then
-	  BuildTeam($arrName[0], $arrName)
-	  Sleep(3*1000)
-   EndIf
-   Local $isFollow = IsNeedFollow($strFeature)
-   If $isFollow Then
-	  For $strName In $arrName
-		 SetFollow($strName, True, True)
-	  Next
-   EndIf
+   InitConfiguration($strFeature, $arrName)
    Local $arrAction[0]
    Switch $strFeature
    Case $NTD
@@ -197,62 +196,75 @@ Func RunFeature($strFeature, $arrName)
 	  _ArrayAdd($arrAction, '"' & @WorkingDir & '\action\' & $strFeature & '.txt"')
    EndSwitch
 
-   If IsSyncFeature($strFeature) Then
-	  For $strName In $arrName
-		 For $strAction In $arrAction
-			RunWait(@AutoItExe & ' ' & @WorkingDir & '\Action.au3' & ' '& $strAction & ' 2 ' & $strName)
-		 Next
+   Local $arrExeName = $arrName
+   If IsTeamFeature($strFeature) Then
+	  Local $lenght = UBound($arrExeName)
+	  For $i = 0 To $lenght - 1
+		 _ArrayDelete($arrExeName, 1)
 	  Next
-   Else
-	  Local $strPresentName = $arrName[0]
-	  If $isFollow Then
-		 ClickOnFeature($strPresentName, $strFeature)
-	  Else
-		 For $strName In $arrName
-			ClickOnFeature($strName, $strFeature)
-			If $strFeature == $TN Then
-			   Local $index = SelectName($strName)
-			   Local $isShow = ShowWindow($index, True)
-			   RunWait(@AutoItExe & ' ' & @WorkingDir & '\Action.au3' & ' "' & @WorkingDir & '\action\MoNhiemVu.txt" 2 ' & $strName)
-			   ShowWindow($index, $isShow)
-			EndIf
-		 Next
-	  EndIf
-	  For $strAction In $arrAction
-		 _FileWriteLog(GetFileLog("replace"), StringFormat("Start %s with present %s",$strAction, $strName))
-		 RunWait(@AutoItExe & ' ' & @WorkingDir & '\Action.au3' & ' '& $strAction & ' 2 ' & $strPresentName)
-	  Next
-	  If $isFollow Then
-		 ClickOnFeature($strPresentName, $strFeature)
-	  Else
-		 For $strName In $arrName
-			ClickOnFeature($strName, $strFeature)
-		 Next
-	  EndIf
    EndIf
+
+   EnableFeature($strFeature, $arrName)
+   DoRunFeature($arrAction, $arrExeName)
+   DisableFeature($strFeature, $arrName)
    ; Unset follow captain
-   If $isFollow Then
-	  For $strName In $arrName
-		 SetFollow($strName, False, True)
-	  Next
-   EndIf
-   If $isTeamFeature And UBound($arrName) > 1 Then
-	  DestroyTeam($arrName[0])
-   EndIf
-   If $isReceiveAward Then
-	  For $strName In $arrName
-		 _FileWriteLog(GetFileLog("replace"), StringFormat("Receive for %s", $strName))
-		 RunWait(@AutoItExe & ' ' & @WorkingDir & '\Action.au3' & ' '& '"' & @WorkingDir & '\action\NhanSoiNoi.txt"' & ' 2 ' & $strName)
-	  Next
-   EndIf
-   Local $arrRunning = _FileListToArray(@WorkingDir, "*.running", 1)
-   For $i = 1 To $arrRunning[0]
-	  FileDelete($arrRunning[$i])
-   Next
+   DestroyConfiguration($strFeature, $arrName)
    If Not $isAutoNext Then
 	  Local $choice = MsgBox(4, "Choices", "Continue ?")
 	  If $choice == $IDNO Then
+		 Local $arrRunning = _FileListToArray(@WorkingDir, "*.running", 1)
+		 For $i = 1 To $arrRunning[0]
+			FileDelete($arrRunning[$i])
+		 Next
 		 Exit
 	  EndIf
+   EndIf
+EndFunc
+
+Func InitConfiguration($strFeature, $arrName)
+   Local $isTeamFeature = IsTeamFeature($strFeature)
+   If $isTeamFeature And UBound($arrName) > 1 Then
+	  BuildTeam($arrName[0], $arrName)
+	  Sleep(3*1000)
+   EndIf
+   Local $isFollow = IsNeedFollow($strFeature)
+   For $strName In $arrName
+	  SetFollow($strName, $isFollow, True)
+   Next
+EndFunc
+
+Func DestroyConfiguration($strFeature, $arrName)
+   If IsTeamFeature($strFeature) And UBound($arrName) > 1 Then
+	  DestroyTeam($arrName[0])
+   EndIf
+EndFunc
+
+Func EnableFeature($strFeature, $arrName)
+   For $strName In $arrName
+	  ClickOnFeature($strName, $strFeature)
+   Next
+EndFunc
+
+Func DisableFeature($strFeature, $arrName)
+   For $strName In $arrName
+	  ClickOnFeature($strName, $strFeature)
+   Next
+EndFunc
+
+Func DoRunFeature($arrAction, $arrName)
+   For $strName In $arrName
+	  For $strAction In $arrAction
+		 _FileWriteLog(GetFileLog("replace"), StringFormat("Run %s for %s", $strAction, $strName))
+		 RunWait(@AutoItExe & ' ' & @WorkingDir & '\Action.au3' & ' '& $strAction & ' 2 ' & $strName)
+	  Next
+   Next
+EndFunc
+
+Func ClearRunning()
+   Local $arrRunning = _FileListToArray(@WorkingDir, "*.running", 1)
+   If Not @error Then
+	  For $i = 1 To $arrRunning[0]
+		 FileDelete($arrRunning[$i])
+	  Next
    EndIf
 EndFunc

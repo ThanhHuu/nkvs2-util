@@ -1,1 +1,1 @@
-state Online
+state Online 30 \action\MoHanhTrang.txt

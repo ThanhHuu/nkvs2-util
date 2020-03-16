@@ -1,0 +1,10 @@
+send {TAB} 0.3
+send {ESC} 0.3
+send {F6} 0.5
+click left-130,106-1 0.1
+send RuouChe 0.1
+click left-341,108-1 0.5
+click left-240,158-1 0.2
+click left-380,526-1 0.2
+send {ESC} 0.3
+addOn \action\BangHoi\ChapNhan.txt ThienGiangXIA

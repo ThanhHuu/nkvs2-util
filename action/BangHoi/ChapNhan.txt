@@ -1,0 +1,16 @@
+send {TAB} 0.3
+send {ESC} 0.3
+send {F6} 0.5
+click left-669,544-1 0.3
+click left-460,368-1 0.3
+click left-533,245-1 0.1
+send {ESC} 0.5
+send {F6} 0.5
+click left-746,117-1 0.3
+click right-392,190-1 0.3
+click left-416,386-1 0.5
+click left-409,376-1 0.2
+click right-375,150-1 0.3
+click left-396,345-1 0.5
+click left-409,376-1 0.2
+send {ESC} 0.5
